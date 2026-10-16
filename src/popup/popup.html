@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mixamo 动画批量下载器</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <span class="dot" id="statusDot"></span>
+      <strong>Mixamo 批量下载</strong>
+    </div>
+    <span class="pill" id="statusPill">未知</span>
+  </header>
+
+  <section class="card" id="connCard">
+    <div class="row between">
+      <span class="muted">连接</span>
+      <button class="link" id="btnTest">检测</button>
+    </div>
+    <div class="connline" id="connLine">正在检测 mixamo.com …</div>
+    <div class="connline muted small" id="filterLine"></div>
+  </section>
+
+  <section class="card">
+    <div class="row between">
+      <span class="muted">进度</span>
+      <span class="small" id="progressText">0 / 0</span>
+    </div>
+    <div class="progress"><div class="progress-inner" id="progressBar"></div></div>
+    <div class="connline small" id="currentLine">—</div>
+    <div class="stats">
+      <span class="tag ok" id="statDone">成功 0</span>
+      <span class="tag warn" id="statFailed">失败 0</span>
+      <span class="tag" id="statPending">待处理 0</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row actions">
+      <button class="btn primary" id="btnStart">开始</button>
+      <button class="btn" id="btnPause">暂停</button>
+      <button class="btn" id="btnResume" hidden>继续</button>
+      <button class="btn danger" id="btnStop">停止</button>
+    </div>
+    <div class="row actions">
+      <button class="btn small" id="btnRetry">重试失败项</button>
+      <button class="btn small" id="btnClear">清空队列/记录</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row between">
+      <span class="muted">保存目录</span>
+      <button class="link" id="btnOptions">设置</button>
+    </div>
+    <div class="connline small" id="dirLine">未授权</div>
+    <div class="connline muted small" id="dirHint">建议选择 D:\sgames\animation-ai\mixamo</div>
+    <div class="row actions">
+      <button class="btn small" id="btnPick">选择目录…</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row between">
+      <span class="muted">下载参数</span>
+      <button class="link" id="btnOptions2">修改</button>
+    </div>
+    <div class="connline small" id="paramsLine">…</div>
+  </section>
+
+  <section class="card">
+    <div class="row between">
+      <span class="muted">最近日志</span>
+      <button class="link" id="btnLogClear">清屏</button>
+    </div>
+    <pre class="logs" id="logs"></pre>
+  </section>
+
+  <footer class="foot small muted">
+    使用 Mixamo 官方导出接口，单任务顺序下载；已下载过的动画会自动跳过。
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

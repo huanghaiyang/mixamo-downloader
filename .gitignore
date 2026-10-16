@@ -1,0 +1,62 @@
+# ============================================================
+# 敏感信息过滤 / 仓库卫生
+# 本文件的目的：确保凭据、运行时数据、构建产物永远不会被提交。
+# 规则按「误提交后果」排序，越危险越靠前。
+# ============================================================
+
+# ---------- 1. 机密与本地配置 ----------
+# 任何形式的密钥/令牌文件
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+secrets/
+.secrets/
+.credentials/
+
+# 签名与私钥（Chrome 扩展打包签名、TLS、SSH）
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crx.key
+
+# ---------- 2. 运行时数据 / 下载产物 ----------
+# 本扩展的默认输出目录与下载的动画资源，体积大且属用户数据
+mixamo/
+*.fbx
+*.fbx.gz
+*.dae
+*.glb
+*.gltf
+*.zip
+*.crx
+
+# ---------- 3. 依赖与构建产物 ----------
+node_modules/
+.pnpm-store/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+
+# ---------- 4. 日志 / 缓存 / 临时文件 ----------
+*.log
+logs/
+.cache/
+.tmp/
+tmp/
+
+# ---------- 5. 编辑器 / 操作系统 ----------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*~
+Thumbs.db
+Desktop.ini
+.DS_Store

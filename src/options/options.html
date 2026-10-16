@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mixamo 批量下载 · 设置</title>
+  <link rel="stylesheet" href="../popup/popup.css" />
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <span class="dot" id="statusDot"></span>
+      <strong>Mixamo 批量下载 · 设置</strong>
+    </div>
+    <span class="pill" id="statusPill">空闲</span>
+  </header>
+
+  <section class="card">
+    <h3>1. 保存目录</h3>
+    <p class="small muted">
+      Chrome 扩展不能把下载写到任意绝对路径（<code>chrome.downloads</code> 的 filename 只能相对于浏览器下载目录）。
+      因此这里使用「文件系统访问」授权一个真实目录，扩展会直接流式写入。<b>只需授权一次</b>，之后即使重启浏览器也有效
+      （若权限被回收，重新选择即可）。
+    </p>
+    <div class="row between wrap">
+      <div class="grow">
+        <div id="dirLine">未授权</div>
+        <div class="small muted" id="dirHint"></div>
+      </div>
+      <div class="row nowrap">
+        <button class="btn primary" id="btnPick">选择目录…</button>
+        <button class="btn" id="btnReauth" hidden>重新授权</button>
+        <button class="btn small" id="btnTestWrite">测试写入</button>
+        <button class="btn small" id="btnClearDir">清除授权</button>
+      </div>
+    </div>
+    <p class="small muted" id="reauthNote" hidden>
+      Chrome 重启后会把已授予的目录权限降级为「询问」，这是浏览器的安全策略，扩展无法绕过。
+      点一次「重新授权」即可恢复（不用重新选目录）。
+    </p>
+    <div class="connline small" id="testResult"></div>
+    <div class="radioRow">
+      <label><input type="radio" name="saveMode" value="fs" /> 写入已授权目录（推荐）</label>
+      <label><input type="radio" name="saveMode" value="downloads" /> 写入浏览器下载目录 / <code id="subdirLabel">mixamo</code></label>
+    </div>
+    <p class="small muted" id="saveModeNote"></p>
+  </section>
+
+  <section class="card">
+    <h3>2. 下载参数</h3>
+    <p class="small muted">默认值与「DOWNLOAD SETTINGS」对话框一致：FBX Binary(.fbx) / With Skin / 60 FPS / Keyframe Reduction: none。</p>
+    <div class="grid4">
+      <label>Format
+        <select id="optFormat">
+          <option value="fbx7_2019">FBX Binary(.fbx)</option>
+          <option value="fbx7_2019_ascii">FBX ASCII(.fbx)</option>
+          <option value="fbx7_unity">FBX for Unity(.fbx)</option>
+          <option value="fbx7_2014">FBX 7.4(.fbx)</option>
+          <option value="fbx6">FBX 6.1(.fbx)</option>
+          <option value="dae_mixamo">Collada(.dae)</option>
+        </select>
+      </label>
+      <label>Skin
+        <select id="optSkin">
+          <option value="true">With Skin</option>
+          <option value="false">Without Skin</option>
+        </select>
+      </label>
+      <label>Frames per Second
+        <select id="optFps">
+          <option value="60">60</option>
+          <option value="30">30</option>
+          <option value="24">24</option>
+        </select>
+      </label>
+      <label>Keyframe Reduction
+        <select id="optReducekf">
+          <option value="0">none</option>
+          <option value="1">uniform</option>
+          <option value="2">non-uniform</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>3. 采集范围与频率</h3>
+    <div class="grid4">
+      <label>抓取范围
+        <select id="optScope">
+          <option value="all">当前筛选的全部结果（所有页）</option>
+          <option value="page">仅当前页</option>
+        </select>
+      </label>
+      <label>动画包(MotionPack)
+        <select id="optPacks">
+          <option value="false">跳过（推荐）</option>
+          <option value="true">一并下载（zip）</option>
+        </select>
+      </label>
+      <label>条目间隔 (ms)
+        <input type="number" id="optDelay" min="500" step="100" />
+      </label>
+      <label>失败重试次数
+        <input type="number" id="optRetries" min="0" max="10" />
+      </label>
+      <label>导出轮询间隔 (ms)
+        <input type="number" id="optPollInterval" min="1000" step="500" />
+      </label>
+      <label>单条导出超时 (秒)
+        <input type="number" id="optPollTimeout" min="30" step="10" />
+      </label>
+      <label>每页条数（接口上限 96）
+        <input type="number" id="optPageSize" min="1" max="96" />
+      </label>
+    </div>
+    <p class="small muted">Mixamo 对导出接口有 429 限流，遇到限流会按 Retry-After 指数退避（最长 5 分钟）后自动重试。</p>
+  </section>
+
+  <section class="card">
+    <h3>4. 队列与记录</h3>
+    <div class="connline small" id="queueLine">—</div>
+    <div class="connline small muted" id="lastRecord"></div>
+    <div class="row nowrap" style="margin-top:8px">
+      <button class="btn small" id="btnRetry" style="flex:0 0 auto">重试失败项</button>
+      <button class="btn small danger" id="btnClearAll" style="flex:0 0 auto">清空队列与已下载记录</button>
+    </div>
+    <p class="small muted">已下载记录用于跳过重复下载；清空后同一动画会被重新下载。</p>
+  </section>
+
+  <section class="card">
+    <h3>5. 连接</h3>
+    <div class="row between wrap">
+      <div class="grow connline" id="connLine">检测中…</div>
+      <button class="btn small" id="btnTest">重新检测</button>
+    </div>
+    <div class="connline small muted" id="filterLine"></div>
+  </section>
+
+  <section class="card">
+    <h3>6. 日志</h3>
+    <div class="row between"><span class="small muted" id="logCount"></span><button class="link" id="btnLogClear">清空日志</button></div>
+    <pre class="logs" id="logs"></pre>
+  </section>
+
+  <p class="foot small muted">
+    提示：设置会自动保存。本扩展通过 Mixamo 官方导出接口下载，不使用页面自动化。
+  </p>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

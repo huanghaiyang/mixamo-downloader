@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "Mixamo 动画批量下载器",
+  "version": "1.0.0",
+  "description": "按当前 Mixamo 页面筛选条件批量下载动画（默认 FBX Binary / With Skin / 60 FPS / 无关键帧精简），单任务顺序下载、去重记录、失败重试、可暂停。",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "storage",
+    "downloads",
+    "tabs",
+    "scripting",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://www.mixamo.com/*",
+    "https://mixamo-storage-prod.s3-us-west-2.amazonaws.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Mixamo 动画批量下载器",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.mixamo.com/*"],
+      "js": ["src/content/mixamo.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}
